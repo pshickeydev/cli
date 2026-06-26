@@ -1,7 +1,7 @@
-# Release workflow for @googleworkspace/cli
+# Release workflow for @googleworkspace/cli (fork)
 #
 # Triggered by pushing a semver tag (e.g. v0.22.3).
-# Builds platform binaries, creates a GitHub Release, publishes to npm and crates.io.
+# Builds platform binaries and creates a GitHub Release.
 
 name: Release
 permissions:
@@ -155,8 +155,8 @@ jobs:
           
           \`\`\`bash
           # 1. Download the archive and its checksum
-          curl -sLO https://github.com/googleworkspace/cli/releases/download/${{ github.ref_name }}/google-workspace-cli-<target>.tar.gz
-          curl -sLO https://github.com/googleworkspace/cli/releases/download/${{ github.ref_name }}/google-workspace-cli-<target>.tar.gz.sha256
+          curl -sLO https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/google-workspace-cli-<target>.tar.gz
+          curl -sLO https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/google-workspace-cli-<target>.tar.gz.sha256
           
           # 2. Verify the checksum
           shasum -a 256 -c google-workspace-cli-<target>.tar.gz.sha256
@@ -183,45 +183,3 @@ jobs:
             --generate-notes \
             $PRERELEASE_FLAG \
             artifacts/*
-
-  publish-npm:
-    needs: [plan, release]
-    runs-on: ubuntu-latest
-    if: ${{ needs.plan.outputs.publishing == 'true' && needs.plan.outputs.prerelease == 'false' }}
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
-        with:
-          node-version: '20.x'
-          registry-url: 'https://wombat-dressing-room.appspot.com'
-
-      - name: Publish to npm
-        working-directory: npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  publish-cargo:
-    needs: [plan, release]
-    runs-on: ubuntu-latest
-    if: ${{ needs.plan.outputs.publishing == 'true' && needs.plan.outputs.prerelease == 'false' }}
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-      - uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7 # stable
-
-      # Publish library crate first (CLI depends on it)
-      - name: Publish google-workspace
-        run: cargo publish --package google-workspace
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      # Wait for crates.io to index the library crate
-      - name: Wait for crates.io index
-        run: sleep 30
-
-      - name: Publish google-workspace-cli
-        run: cargo publish --package google-workspace-cli
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
