@@ -52,6 +52,6 @@
   ],
   "devDependencies": {
     "@changesets/cli": "2.29.8",
-    "lefthook": "2.1.2"
+    "lefthook": "2.1.9"
   }
 }
