@@ -3,5 +3,12 @@
   "extends": [
     "config:best-practices",
     "group:allNonMajor"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["reqwest"],
+      "enabled": false,
+      "description": "reqwest 0.13 renames rustls-tls-native-roots to rustls-native-certs — requires manual code change"
+    }
   ]
 }
