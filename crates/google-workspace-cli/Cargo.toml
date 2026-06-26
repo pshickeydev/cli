@@ -35,7 +35,7 @@ tempfile = "3"
 aes-gcm = "0.10"
 anyhow = "1"
 clap = { version = "4", features = ["derive", "string"] }
-dirs = "5"
+dirs = "6"
 dotenvy = "0.15"
 hostname = "0.4"
 reqwest = { version = "0.13", features = ["json", "form", "query", "stream", "rustls", "rustls-native-certs", "socks"], default-features = false }
