@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Install cargo-audit
-        uses: taiki-e/install-action@a37010ded18ff788be4440302bd6830b1ae50d8b # cargo-llvm-cov
+        uses: taiki-e/install-action@846871f174ba44370fe1539a9bdbe11d1e309e50 # cargo-llvm-cov
         with:
           tool: cargo-audit
 
