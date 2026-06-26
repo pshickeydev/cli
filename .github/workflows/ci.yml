@@ -103,7 +103,7 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@d96bc962e61b3049ce8128d03d57a1144fa96539 # main
       - name: Magic Nix Cache
-        uses: DeterminateSystems/magic-nix-cache-action@cec65ff6f104850203b152861d3f9e5f1747885d # main
+        uses: DeterminateSystems/magic-nix-cache-action@76aaf8814cdb385b86597c32b8c51b66b69b0839 # main
       - name: Check flake
         run: nix flake check
       - name: Build flake
