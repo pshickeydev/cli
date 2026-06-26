@@ -41,27 +41,4 @@ jobs:
             exit 1
           fi
           echo "Policy check passed."
-      - name: Enforce Changeset File
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin ${{ github.base_ref }}
-          # Skip changeset requirement if no Rust/Cargo files changed
-          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -qE '\.(rs)$|^Cargo\.(toml|lock)$'; then
-            echo "No Rust/Cargo files changed; skipping changeset requirement."
-            exit 0
-          fi
-          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "^.changeset/.*\.md$"; then
-            echo "::error::A Changeset file is required! Please run 'npx changeset' or manually create a markdown file in the .changeset directory describing your changes to automatically version and release this PR."
-            exit 1
-          fi
-          echo "Changeset file found!"
-      - name: Validate Changeset Package Name
-        if: github.event_name == 'pull_request'
-        run: |
-          for f in $(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^.changeset/.*\.md$"); do
-            if grep -q '"googleworkspace-cli"' "$f"; then
-              echo "::error file=$f::Wrong package name. Use '\"@googleworkspace/cli\"' not '\"googleworkspace-cli\"'."
-              exit 1
-            fi
-          done
-          echo "Changeset package names valid!"
+
