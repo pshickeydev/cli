@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   tag:
@@ -75,3 +76,10 @@ jobs:
           git commit -m "chore: bump version to ${TAG#v}"
           git tag "$TAG"
           git push origin main "$TAG"
+
+      - name: Trigger release workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --field tag=${{ steps.version.outputs.tag }}
