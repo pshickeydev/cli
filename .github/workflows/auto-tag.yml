@@ -16,17 +16,62 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get current version and bump patch
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Determine next fork version
         id: version
         run: |
-          latest=$(git tag --sort=-v:refname | grep -E '^v[0-9]' | head -1)
-          if [ -z "$latest" ]; then
-            echo "tag=v0.1.0" >> "$GITHUB_OUTPUT"
+          # Read the upstream base version from the CLI crate
+          BASE=$(awk '/^\[package\]/{in_pkg=1} in_pkg && /^version = /{gsub(/"/, "", $3); print $3; exit}' crates/google-workspace-cli/Cargo.toml)
+          # Strip any existing pre-release suffix to get the upstream base
+          BASE=$(echo "$BASE" | sed 's/-.*//')
+
+          # Find the latest fork tag for this base version
+          LATEST=$(git tag --sort=-v:refname | grep -E "^v${BASE}-fork\.[0-9]+$" | head -1)
+
+          if [ -z "$LATEST" ]; then
+            FORK_NUM=1
           else
-            echo "$latest" | sed 's/v//' | awk -F. '{printf "tag=v%d.%d.%d\n", $1, $2, $3+1}' >> "$GITHUB_OUTPUT"
+            FORK_NUM=$(echo "$LATEST" | sed "s/v${BASE}-fork\.//" )
+            FORK_NUM=$((FORK_NUM + 1))
           fi
 
-      - name: Create tag
+          NEW_VERSION="${BASE}-fork.${FORK_NUM}"
+          echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Update version in source files
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          git tag ${{ steps.version.outputs.tag }}
-          git push origin ${{ steps.version.outputs.tag }}
+          # Update [package] version in both crate Cargo.toml files
+          for cargo_toml in crates/*/Cargo.toml; do
+            tmp=$(mktemp)
+            awk -v ver="$VERSION" '
+              /^\[package\]/ { in_pkg=1 }
+              /^\[/ && !/^\[package\]/ { in_pkg=0 }
+              in_pkg && /^version = / { $0 = "version = \"" ver "\"" }
+              { print }
+            ' "$cargo_toml" > "$tmp" && mv "$tmp" "$cargo_toml"
+          done
+
+          # Update inter-crate dependency version
+          sed -i -E "s/(google-workspace = \{ version = \")[^\"]+(\")/\1${VERSION}\2/" crates/google-workspace-cli/Cargo.toml
+
+          # Update package.json version
+          tmp=$(mktemp)
+          jq --arg v "$VERSION" '.version = $v' package.json > "$tmp" && mv "$tmp" package.json
+
+          # Regenerate Cargo.lock
+          cargo generate-lockfile
+
+      - name: Commit, tag, and push
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add crates/*/Cargo.toml package.json Cargo.lock
+          git commit -m "chore: bump version to ${TAG#v}"
+          git tag "$TAG"
+          git push origin main "$TAG"

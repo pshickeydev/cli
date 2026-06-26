@@ -31,7 +31,7 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           VERSION="${TAG#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" == *-* ]]; then
+          if [[ "$VERSION" == *-* && "$VERSION" != *-fork.* ]]; then
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
           else
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
