@@ -357,14 +357,17 @@ jobs:
         run: chmod +x ./bin/gws
 
       - name: Decode credentials
+        id: creds
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
         run: |
           if [ -z "$GOOGLE_CREDENTIALS_JSON" ]; then
-            echo "::error::GOOGLE_CREDENTIALS_JSON secret is not set"
-            exit 1
+            echo "::warning::GOOGLE_CREDENTIALS_JSON secret is not set — skipping API smoketests"
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$GOOGLE_CREDENTIALS_JSON" | base64 -d > /tmp/credentials.json
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
-          echo "$GOOGLE_CREDENTIALS_JSON" | base64 -d > /tmp/credentials.json
 
       - name: Smoketest — help
         run: ./bin/gws --help
@@ -373,6 +376,7 @@ jobs:
         run: ./bin/gws schema drive.files.list | jq -e '.httpMethod'
 
       - name: Smoketest — Drive files list
+        if: steps.creds.outputs.available == 'true'
         env:
           GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE: /tmp/credentials.json
         run: |
@@ -381,6 +385,7 @@ jobs:
             | jq -e '.files'
 
       - name: Smoketest — Gmail messages
+        if: steps.creds.outputs.available == 'true'
         env:
           GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE: /tmp/credentials.json
         run: |
@@ -389,6 +394,7 @@ jobs:
             | jq -e '.messages'
 
       - name: Smoketest — Calendar events
+        if: steps.creds.outputs.available == 'true'
         env:
           GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE: /tmp/credentials.json
         run: |
@@ -397,6 +403,7 @@ jobs:
             | jq -e '.kind'
 
       - name: Smoketest — Slides presentation
+        if: steps.creds.outputs.available == 'true'
         env:
           GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE: /tmp/credentials.json
         run: |
@@ -405,6 +412,7 @@ jobs:
             | jq -e '.presentationId'
 
       - name: Smoketest — pagination
+        if: steps.creds.outputs.available == 'true'
         env:
           GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE: /tmp/credentials.json
         run: |
