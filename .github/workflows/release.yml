@@ -192,7 +192,6 @@ jobs:
           TAG="v${{ needs.plan.outputs.version }}"
 
           gh release create "$TAG" \
-            --target "$TAG" \
             --title "$TAG" \
             --notes "$NOTES" \
             --generate-notes \
