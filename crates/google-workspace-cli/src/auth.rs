@@ -785,6 +785,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_load_credentials_encrypted_takes_priority_over_default() {
         // Encrypted credentials should be loaded before the default plaintext path
         let enc_json = r#"{
@@ -801,6 +802,7 @@ mod tests {
         }"#;
 
         let dir = tempfile::tempdir().unwrap();
+        let _config_guard = EnvVarGuard::set("GOOGLE_WORKSPACE_CLI_CONFIG_DIR", dir.path());
         let enc_path = dir.path().join("credentials.enc");
         let plain_path = dir.path().join("credentials.json");
 
