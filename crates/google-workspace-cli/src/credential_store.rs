@@ -406,8 +406,8 @@ pub fn decrypt(data: &[u8]) -> anyhow::Result<Vec<u8>> {
     let cipher = Aes256Gcm::new_from_slice(&key)
         .map_err(|e| anyhow::anyhow!("Failed to create cipher: {e}"))?;
 
-    let nonce = Nonce::try_from(&data[..12])
-        .map_err(|_| anyhow::anyhow!("Invalid nonce length"))?;
+    let nonce =
+        Nonce::try_from(&data[..12]).map_err(|_| anyhow::anyhow!("Invalid nonce length"))?;
     let plaintext = cipher.decrypt(&nonce, &data[12..]).map_err(|_| {
         anyhow::anyhow!(
             "Decryption failed. Credentials may have been created on a different machine. \
