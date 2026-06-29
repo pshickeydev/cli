@@ -14,6 +14,26 @@ Drive, Gmail, Calendar, and every Workspace API. Zero boilerplate. Structured JS
 </p>
 <br>
 
+## Fork Changes
+
+This is a maintained fork of [googleworkspace/cli](https://github.com/googleworkspace/cli). It tracks upstream and adds the following changes:
+
+### Dependency maintenance
+
+- **Automated dependency management** via Renovate with grouped PRs and an auto-tagging release pipeline.
+- **Upgraded dependencies with breaking changes**: reqwest 0.12 to 0.13, aes-gcm to 0.11, keyring to v4, toml to v1.
+- **Replaced abandoned dependencies** with standard library or hand-written alternatives:
+  - `dotenvy` replaced with an inline `.env` parser (`src/dotenv.rs`)
+  - `derive_builder` replaced with a hand-written builder for `SubscribeConfig`
+  - `mime_guess2` replaced with a built-in MIME type lookup table (`src/mime_util.rs`)
+  - `dirs` replaced with platform-specific env var lookups (`src/platform.rs`)
+
+### CI/CD
+
+- Removed upstream-only workflows (coverage upload, smoketest tokens) that cannot run on a fork.
+- Fixed release workflow to use a dedicated `RELEASE_TOKEN` for auto-tagging and attestation.
+- Removed changeset enforcement from policy checks (changesets are still required by convention).
+
 ⬇️ **[Download the latest release for your OS](https://github.com/googleworkspace/cli/releases)**
 
 `gws` doesn't ship a static list of commands. It reads Google's own [Discovery Service](https://developers.google.com/discovery) at runtime and builds its entire command surface dynamically. When Google Workspace adds an API endpoint or method, `gws` picks it up automatically.
@@ -388,7 +408,7 @@ All variables are optional. See [`.env.example`](.env.example) for a copy-paste 
 | `GOOGLE_WORKSPACE_CLI_LOG_FILE` | Directory for JSON log files with daily rotation. Off by default. |
 | `GOOGLE_WORKSPACE_PROJECT_ID` | GCP project ID override for quota/billing and fallback for helper commands |
 
-Environment variables can also be set in a `.env` file (loaded via [dotenvy](https://crates.io/crates/dotenvy)).
+Environment variables can also be set in a `.env` file (loaded on startup from the current directory).
 
 ## Exit Codes
 

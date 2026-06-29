@@ -314,7 +314,7 @@ pub fn config_dir() -> PathBuf {
     }
 
     // Use ~/.config/gws on all platforms for a consistent, user-friendly path.
-    let primary = dirs::home_dir()
+    let primary = crate::platform::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
         .join(".config")
         .join("gws");
@@ -324,7 +324,7 @@ pub fn config_dir() -> PathBuf {
 
     // Backward compat: fall back to OS-specific config dir for existing installs
     // (e.g. ~/Library/Application Support/gws on macOS, %APPDATA%\gws on Windows).
-    let legacy = dirs::config_dir()
+    let legacy = crate::platform::config_dir()
         .unwrap_or_else(|| PathBuf::from("."))
         .join("gws");
     if legacy.exists() {
@@ -1842,7 +1842,10 @@ mod tests {
         // The primary (non-test) path should be ~/.config/gws.
         // We can't easily test the real function without env override,
         // but we verify the building blocks: home_dir + .config + gws.
-        let primary = dirs::home_dir().unwrap().join(".config").join("gws");
+        let primary = crate::platform::home_dir()
+            .unwrap()
+            .join(".config")
+            .join("gws");
         assert!(primary.ends_with(".config/gws") || primary.ends_with(r".config\gws"));
     }
 

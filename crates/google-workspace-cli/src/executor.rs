@@ -836,7 +836,9 @@ fn resolve_upload_mime(
     let raw = explicit
         .map(|s| s.to_string())
         .or_else(|| {
-            upload_path.and_then(|path| mime_guess2::from_path(path).first().map(|m| m.to_string()))
+            upload_path.and_then(|path| {
+                crate::mime_util::guess_mime(std::path::Path::new(path)).map(|s| s.to_string())
+            })
         })
         .or_else(|| {
             metadata

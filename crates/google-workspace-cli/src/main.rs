@@ -25,6 +25,7 @@ mod client;
 mod commands;
 pub(crate) mod credential_store;
 mod discovery;
+mod dotenv;
 mod error;
 mod executor;
 mod formatter;
@@ -32,8 +33,10 @@ mod fs_util;
 mod generate_skills;
 mod helpers;
 mod logging;
+mod mime_util;
 mod oauth_config;
 mod output;
+mod platform;
 mod schema;
 mod services;
 mod setup;
@@ -48,7 +51,7 @@ use error::{print_error_json, GwsError};
 #[tokio::main]
 async fn main() {
     // Load .env file if present (silently ignored if missing)
-    let _ = dotenvy::dotenv();
+    dotenv::load(std::path::Path::new(".env"));
 
     // Initialize structured logging (no-op if env vars are unset)
     logging::init_logging();
