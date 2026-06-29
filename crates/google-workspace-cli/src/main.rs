@@ -36,6 +36,7 @@ mod logging;
 mod mime_util;
 mod oauth_config;
 mod output;
+mod platform;
 mod schema;
 mod services;
 mod setup;

@@ -119,7 +119,7 @@ pub fn get_quota_project() -> Option<String> {
 /// Note: `dirs::config_dir()` returns `~/Library/Application Support` on macOS, which is
 /// wrong for gcloud. The Google Cloud SDK always uses `~/.config/gcloud` regardless of OS.
 fn adc_well_known_path() -> Option<PathBuf> {
-    dirs::home_dir().map(|d| {
+    crate::platform::home_dir().map(|d| {
         d.join(".config")
             .join("gcloud")
             .join("application_default_credentials.json")
