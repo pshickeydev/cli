@@ -4,29 +4,107 @@ use crate::helpers::PUBSUB_API_BASE;
 use crate::output::sanitize_for_terminal;
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, Default, Builder)]
-#[builder(setter(into))]
+#[derive(Debug, Clone)]
 pub struct SubscribeConfig {
-    #[builder(default)]
     target: Option<String>,
-    #[builder(default)]
     event_types: Vec<String>,
-    #[builder(default)]
     project: Option<ProjectId>,
-    #[builder(default)]
     subscription: Option<SubscriptionName>,
-    #[builder(default = "10")]
     max_messages: u32,
-    #[builder(default = "2")]
     poll_interval: u64,
-    #[builder(default)]
     once: bool,
-    #[builder(default)]
     cleanup: bool,
-    #[builder(default)]
     no_ack: bool,
-    #[builder(default)]
     output_dir: Option<PathBuf>,
+}
+
+impl Default for SubscribeConfig {
+    fn default() -> Self {
+        Self {
+            target: None,
+            event_types: Vec::new(),
+            project: None,
+            subscription: None,
+            max_messages: 10,
+            poll_interval: 2,
+            once: false,
+            cleanup: false,
+            no_ack: false,
+            output_dir: None,
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct SubscribeConfigBuilder {
+    target: Option<Option<String>>,
+    event_types: Option<Vec<String>>,
+    project: Option<Option<ProjectId>>,
+    subscription: Option<Option<SubscriptionName>>,
+    max_messages: Option<u32>,
+    poll_interval: Option<u64>,
+    once: Option<bool>,
+    cleanup: Option<bool>,
+    no_ack: Option<bool>,
+    output_dir: Option<Option<PathBuf>>,
+}
+
+impl SubscribeConfigBuilder {
+    pub fn target(&mut self, v: impl Into<Option<String>>) -> &mut Self {
+        self.target = Some(v.into());
+        self
+    }
+    pub fn event_types(&mut self, v: impl Into<Vec<String>>) -> &mut Self {
+        self.event_types = Some(v.into());
+        self
+    }
+    pub fn project(&mut self, v: impl Into<Option<ProjectId>>) -> &mut Self {
+        self.project = Some(v.into());
+        self
+    }
+    pub fn subscription(&mut self, v: impl Into<Option<SubscriptionName>>) -> &mut Self {
+        self.subscription = Some(v.into());
+        self
+    }
+    pub fn max_messages(&mut self, v: impl Into<u32>) -> &mut Self {
+        self.max_messages = Some(v.into());
+        self
+    }
+    pub fn poll_interval(&mut self, v: impl Into<u64>) -> &mut Self {
+        self.poll_interval = Some(v.into());
+        self
+    }
+    pub fn once(&mut self, v: impl Into<bool>) -> &mut Self {
+        self.once = Some(v.into());
+        self
+    }
+    pub fn cleanup(&mut self, v: impl Into<bool>) -> &mut Self {
+        self.cleanup = Some(v.into());
+        self
+    }
+    pub fn no_ack(&mut self, v: impl Into<bool>) -> &mut Self {
+        self.no_ack = Some(v.into());
+        self
+    }
+    pub fn output_dir(&mut self, v: impl Into<Option<PathBuf>>) -> &mut Self {
+        self.output_dir = Some(v.into());
+        self
+    }
+    pub fn build(&self) -> Result<SubscribeConfig, String> {
+        let d = SubscribeConfig::default();
+        Ok(SubscribeConfig {
+            target: self.target.clone().unwrap_or(d.target),
+            event_types: self.event_types.clone().unwrap_or(d.event_types),
+            project: self.project.clone().unwrap_or(d.project),
+            subscription: self.subscription.clone().unwrap_or(d.subscription),
+            max_messages: self.max_messages.unwrap_or(d.max_messages),
+            poll_interval: self.poll_interval.unwrap_or(d.poll_interval),
+            once: self.once.unwrap_or(d.once),
+            cleanup: self.cleanup.unwrap_or(d.cleanup),
+            no_ack: self.no_ack.unwrap_or(d.no_ack),
+            output_dir: self.output_dir.clone().unwrap_or(d.output_dir),
+        })
+    }
 }
 
 fn parse_subscribe_args(matches: &ArgMatches) -> Result<SubscribeConfig, GwsError> {
@@ -941,5 +1019,54 @@ mod tests {
             "/v1/projects/test/subscriptions/demo:acknowledge"
         );
         assert_eq!(requests[1].1, "authorization: Bearer pubsub-token");
+    }
+
+    #[test]
+    fn test_builder_defaults() {
+        let config = SubscribeConfigBuilder::default().build().unwrap();
+        assert_eq!(config.target, None);
+        assert!(config.event_types.is_empty());
+        assert_eq!(config.project, None);
+        assert_eq!(config.subscription, None);
+        assert_eq!(config.max_messages, 10);
+        assert_eq!(config.poll_interval, 2);
+        assert!(!config.once);
+        assert!(!config.cleanup);
+        assert!(!config.no_ack);
+        assert_eq!(config.output_dir, None);
+    }
+
+    #[test]
+    fn test_builder_setters_override_defaults() {
+        let config = SubscribeConfigBuilder::default()
+            .max_messages(50_u32)
+            .poll_interval(10_u64)
+            .once(true)
+            .cleanup(true)
+            .no_ack(true)
+            .build()
+            .unwrap();
+        assert_eq!(config.max_messages, 50);
+        assert_eq!(config.poll_interval, 10);
+        assert!(config.once);
+        assert!(config.cleanup);
+        assert!(config.no_ack);
+    }
+
+    #[test]
+    fn test_builder_option_fields() {
+        let config = SubscribeConfigBuilder::default()
+            .target(Some("t".to_string()))
+            .project(Some(ProjectId("p".to_string())))
+            .build()
+            .unwrap();
+        assert_eq!(config.target, Some("t".to_string()));
+        assert_eq!(config.project, Some(ProjectId("p".to_string())));
+
+        let config2 = SubscribeConfigBuilder::default()
+            .target(None::<String>)
+            .build()
+            .unwrap();
+        assert_eq!(config2.target, None);
     }
 }

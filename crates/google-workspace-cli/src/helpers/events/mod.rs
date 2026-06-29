@@ -23,7 +23,6 @@ pub(super) use crate::auth;
 pub(super) use crate::error::GwsError;
 pub(super) use anyhow::Context;
 pub(super) use clap::{Arg, ArgAction, ArgMatches, Command};
-pub(super) use derive_builder::Builder;
 pub(super) use serde_json::{json, Value};
 pub(super) use std::future::Future;
 pub(super) use std::pin::Pin;
