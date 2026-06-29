@@ -33,6 +33,7 @@ mod fs_util;
 mod generate_skills;
 mod helpers;
 mod logging;
+mod mime_util;
 mod oauth_config;
 mod output;
 mod schema;

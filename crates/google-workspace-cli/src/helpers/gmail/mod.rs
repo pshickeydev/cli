@@ -1352,8 +1352,8 @@ pub(super) fn parse_attachments(matches: &ArgMatches) -> Result<Vec<Attachment>,
             .ok_or_else(|| {
                 GwsError::Validation(format!("--attach '{path}': could not extract filename"))
             })?;
-        let content_type = mime_guess2::from_path(&canonical)
-            .first_or_octet_stream()
+        let content_type = crate::mime_util::guess_mime(&canonical)
+            .unwrap_or("application/octet-stream")
             .to_string();
 
         attachments.push(Attachment {
