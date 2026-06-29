@@ -36,7 +36,6 @@ aes-gcm = { version = "0.11", features = ["getrandom"] }
 anyhow = "1"
 clap = { version = "4", features = ["derive", "string"] }
 dirs = "6"
-dotenvy = "0.15"
 hostname = "0.4"
 reqwest = { version = "0.13", features = ["json", "form", "query", "stream", "rustls", "socks"], default-features = false }
 rand = "0.10"
