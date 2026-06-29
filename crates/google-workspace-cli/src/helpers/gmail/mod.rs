@@ -1277,7 +1277,7 @@ const MAX_TOTAL_ATTACHMENT_BYTES: u64 = 25 * 1024 * 1024;
 /// A file attachment ready to add to an outgoing message.
 ///
 /// Created either from a local file (`--attach`, where `content_type` is
-/// inferred from the extension via `mime_guess2`) or from an original
+/// inferred from the file extension) or from an original
 /// message's MIME part (`fetch_original_parts`, where `content_type` comes
 /// from the Gmail API). mail-builder handles RFC 2231 encoding for non-ASCII
 /// filenames in the Content-Disposition header.

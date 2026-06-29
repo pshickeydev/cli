@@ -116,7 +116,7 @@ pub fn get_quota_project() -> Option<String> {
 /// Returns the well-known Application Default Credentials path:
 /// `~/.config/gcloud/application_default_credentials.json`.
 ///
-/// Note: `dirs::config_dir()` returns `~/Library/Application Support` on macOS, which is
+/// Note: the OS-specific config dir is `~/Library/Application Support` on macOS, which is
 /// wrong for gcloud. The Google Cloud SDK always uses `~/.config/gcloud` regardless of OS.
 fn adc_well_known_path() -> Option<PathBuf> {
     crate::platform::home_dir().map(|d| {
