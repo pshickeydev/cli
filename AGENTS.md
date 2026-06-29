@@ -237,3 +237,7 @@ See [`src/helpers/README.md`](crates/google-workspace-cli/src/helpers/README.md)
 | `GOOGLE_WORKSPACE_CLI_LOG_FILE` | Directory for JSON-line log files with daily rotation. Off by default. |
 
 All variables can also live in a `.env` file (loaded on startup from the current directory).
+
+## Fork Changes
+
+This repository is a maintained fork. When making a major change that diverges from upstream — such as replacing a dependency, adding infrastructure, or changing CI/CD behavior — add an entry to the **Fork Changes** section at the top of `README.md`. Minor fixes and routine dependency bumps do not need an entry.
