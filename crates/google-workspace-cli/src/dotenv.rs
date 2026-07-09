@@ -35,10 +35,16 @@ fn parse_and_set(content: &str) {
             continue;
         };
         let key = key.trim();
-        if key.is_empty() {
+        // `std::env::set_var`/`var_os` panic if the key or value contains a
+        // NUL byte, so a malformed or adversarial `.env` file must not reach
+        // them unvalidated.
+        if key.is_empty() || key.contains('\0') {
             continue;
         }
         let value = strip_quotes(value.trim());
+        if value.contains('\0') {
+            continue;
+        }
         if std::env::var_os(key).is_none() {
             std::env::set_var(key, value);
         }
@@ -148,5 +154,29 @@ mod tests {
     fn skips_empty_key() {
         parse_and_set("=value_only");
         // Should not panic or set anything
+    }
+
+    #[test]
+    #[serial]
+    fn skips_key_with_nul_byte() {
+        // std::env::set_var/var_os panic on a NUL byte in the key, so a
+        // malformed .env file must not reach them unvalidated. This must not
+        // panic, and must not prevent later valid lines from being parsed.
+        clear_test_vars(&["DOTENV_TEST_NOEQ_AFTER_NUL"]);
+        parse_and_set("BAD\0KEY=value\nDOTENV_TEST_NOEQ_AFTER_NUL=ok");
+        assert!(std::env::var_os("BAD\0KEY").is_none());
+        assert_eq!(std::env::var("DOTENV_TEST_NOEQ_AFTER_NUL").unwrap(), "ok");
+        clear_test_vars(&["DOTENV_TEST_NOEQ_AFTER_NUL"]);
+    }
+
+    #[test]
+    #[serial]
+    fn skips_value_with_nul_byte() {
+        // A NUL byte in the value must also be rejected before it reaches
+        // std::env::set_var, which would otherwise panic.
+        clear_test_vars(&["DOTENV_TEST_NUL_VALUE"]);
+        parse_and_set("DOTENV_TEST_NUL_VALUE=bad\0value");
+        assert!(std::env::var_os("DOTENV_TEST_NUL_VALUE").is_none());
+        clear_test_vars(&["DOTENV_TEST_NUL_VALUE"]);
     }
 }
