@@ -356,8 +356,9 @@ fn get_or_create_key() -> anyhow::Result<[u8; 32]> {
     #[cfg(test)]
     let backend = KeyringBackend::File; // Force file to avoid native keychain prompts during test execution
 
-    // Item 5: log which backend was selected
-    eprintln!("Using keyring backend: {}", backend.as_str());
+    // Log which backend was selected (opt-in via GOOGLE_WORKSPACE_CLI_LOG; does not
+    // print to stderr unconditionally, so it never pollutes normal command output).
+    tracing::debug!(backend = backend.as_str(), "using keyring backend");
 
     let username = std::env::var("USER")
         .or_else(|_| std::env::var("USERNAME"))
