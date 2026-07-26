@@ -66,4 +66,4 @@ uuid = { version = "1.22.0", features = ["v4", "v5"] }
 keyring = "4"
 
 [dev-dependencies]
-serial_test = "=3.5.0"
+serial_test = "=4.0.1"
