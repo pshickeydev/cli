@@ -1205,7 +1205,7 @@ dependencies = [
 
 [[package]]
 name = "google-workspace"
-version = "0.22.5-fork.54"
+version = "0.22.5-fork.55"
 dependencies = [
  "anyhow",
  "percent-encoding",
@@ -1221,7 +1221,7 @@ dependencies = [
 
 [[package]]
 name = "google-workspace-cli"
-version = "0.22.5-fork.54"
+version = "0.22.5-fork.55"
 dependencies = [
  "aes-gcm",
  "anyhow",
