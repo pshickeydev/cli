@@ -34,6 +34,8 @@ This is a maintained fork of [googleworkspace/cli](https://github.com/googlework
 - Fixed release workflow to use a dedicated `RELEASE_TOKEN` for auto-tagging and attestation.
 - Removed changeset enforcement from policy checks (changesets are still required by convention).
 
+-----
+
 ⬇️ **[Download the latest release for your OS](https://github.com/googleworkspace/cli/releases)**
 
 `gws` doesn't ship a static list of commands. It reads Google's own [Discovery Service](https://developers.google.com/discovery) at runtime and builds its entire command surface dynamically. When Google Workspace adds an API endpoint or method, `gws` picks it up automatically.
