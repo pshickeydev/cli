@@ -1198,7 +1198,7 @@ dependencies = [
 
 [[package]]
 name = "google-workspace"
-version = "0.22.5-fork.73"
+version = "0.22.5-fork.74"
 dependencies = [
  "anyhow",
  "percent-encoding",
@@ -1214,7 +1214,7 @@ dependencies = [
 
 [[package]]
 name = "google-workspace-cli"
-version = "0.22.5-fork.73"
+version = "0.22.5-fork.74"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -4273,9 +4273,9 @@ dependencies = [
 
 [[package]]
 name = "zcheapstr"
-version = "1.0.0"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "769381976ea05c1f0abde0ca527b02e415bccbdbad148534a2b0c1901c9ab934"
+checksum = "d1afec51604565183aeb5c54c20aeab286120d4e4460f7f76e3e8bb8c0d99473"
 dependencies = [
  "serde",
 ]
