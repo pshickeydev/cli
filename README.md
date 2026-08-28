@@ -33,6 +33,7 @@ This is a maintained fork of [googleworkspace/cli](https://github.com/googlework
 - Removed upstream-only workflows (coverage upload, smoketest tokens) that cannot run on a fork.
 - Fixed release workflow to use a dedicated `RELEASE_TOKEN` for auto-tagging and attestation.
 - Removed changeset enforcement from policy checks (changesets are still required by convention).
+- Updated the Nix flake's nixpkgs pin so crate sources download from the `static.crates.io` CDN, avoiding intermittent 403 rate limits from the crates.io API during the Nix build.
 
 -----
 
