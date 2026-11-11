@@ -14,7 +14,20 @@ targets = [
 
 # Advisories — checks for known vulnerable crate versions
 [advisories]
-ignore = []
+ignore = [
+    # zvariant/zbus_names/zvariant_derive were merged into zbus 6.0 and marked
+    # unmaintained (RUSTSEC-2026-0370/0371/0372, 2026-10-16). These are pure
+    # maintenance notices, not vulnerabilities. The crates enter the graph only
+    # transitively: keyring v4 -> zbus-secret-service-keyring-store v1 ->
+    # secret-service v5 -> zbus v5. No upstream fix is published — keyring is
+    # still v4.2.0 (2026-08-29) and its main branch still depends on the
+    # zbus-5-based store crate; secret-service 6.0.0 (zbus 6) is only a
+    # pre-release (6.0.0-rc.1). Revisit when keyring ships a release whose
+    # Linux secret-service backend is built on zbus >= 6.
+    "RUSTSEC-2026-0370", # zvariant is unmaintained
+    "RUSTSEC-2026-0371", # zbus_names is unmaintained
+    "RUSTSEC-2026-0372", # zvariant_derive is unmaintained
+]
 db-urls = ["https://github.com/rustsec/advisory-db"]
 
 # Licenses — allowlist of acceptable licenses

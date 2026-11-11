@@ -21,6 +21,7 @@ This is a maintained fork of [googleworkspace/cli](https://github.com/googlework
 ### Dependency maintenance
 
 - **Automated dependency management** via Renovate with grouped PRs and an auto-tagging release pipeline.
+- **Cargo-deny advisory ignores for the zbus 5 stack** (`RUSTSEC-2026-0370/0371/0372`): `zvariant`, `zbus_names`, and `zvariant_derive` were merged into zbus 6.0 and marked unmaintained. They arrive transitively through the `keyring` v4 Linux secret-service backend (`keyring` → `zbus-secret-service-keyring-store` → `secret-service` v5 → `zbus` v5) with no published upstream fix; revisit when `keyring` releases a zbus 6-based backend.
 - **Upgraded dependencies with breaking changes**: reqwest 0.12 to 0.13, aes-gcm to 0.11, keyring to v4, toml to v1.
 - **Replaced abandoned dependencies** with standard library or hand-written alternatives:
   - `dotenvy` replaced with an inline `.env` parser (`src/dotenv.rs`)
