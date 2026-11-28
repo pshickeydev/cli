@@ -27,6 +27,14 @@ ignore = [
     "RUSTSEC-2026-0370", # zvariant is unmaintained
     "RUSTSEC-2026-0371", # zbus_names is unmaintained
     "RUSTSEC-2026-0372", # zvariant_derive is unmaintained
+    # chrono/chrono-tz were marked unmaintained (RUSTSEC-2026-0543/0555,
+    # 2026-09-14). Pure maintenance notices, not vulnerabilities, and the
+    # advisory confirms no safe upgrade exists. Both enter the graph directly
+    # from google-workspace-cli (timezone.rs uses chrono-tz for Calendar
+    # Settings timezone resolution). Revisit if a maintained replacement
+    # (e.g. jiff) is adopted or chrono regains a maintainer.
+    "RUSTSEC-2026-0543", # chrono is unmaintained
+    "RUSTSEC-2026-0555", # chrono-tz is unmaintained
 ]
 db-urls = ["https://github.com/rustsec/advisory-db"]
 
